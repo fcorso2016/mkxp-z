@@ -31,10 +31,10 @@ extern std::unordered_map<int, int> vKeyToScancode;
 extern std::unordered_map<std::string, int> strToScancode;
 extern std::unordered_map<std::string, SDL_GameControllerButton> strToGCButton;
 
-struct InputPrivate;
+struct UserInputPrivate;
 struct RGSSThreadData;
 
-class Input
+class UserInput
 {
 public:
 	enum ButtonCode
@@ -117,12 +117,12 @@ public:
     const char *getButtonName(SDL_GameControllerButton button);
 
 private:
-	Input(const RGSSThreadData &rtData);
-	~Input();
+	UserInput(const RGSSThreadData &rtData);
+	~UserInput();
 
 	friend struct SharedStatePrivate;
 
-	InputPrivate *p;
+	UserInputPrivate *p;
 };
 
 #endif // INPUT_H

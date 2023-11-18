@@ -122,7 +122,7 @@ main_source = files(
     'sharedstate.cpp',
 
     'audio/alstream.cpp',
-    'audio/audio.cpp',
+    'audio/alaudio.cpp',
     'audio/audiostream.cpp',
     'audio/fluid-fun.cpp',
     'audio/midisource.cpp',
@@ -175,7 +175,7 @@ main_source = files(
     'filesystem/filesystem.cpp',
     'filesystem/filesystemImpl.cpp',
 
-    'input/input.cpp',
+    'input/userinput.cpp',
     'input/keybindings.cpp',
 
     'net/LUrlParser.cpp',
