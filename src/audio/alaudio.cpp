@@ -35,7 +35,7 @@
 #include <SDL_thread.h>
 #include <SDL_timer.h>
 
-struct AudioPrivate
+struct AlAudioPrivate
 {
     
     std::vector<AudioStream*> bgmTracks;
@@ -68,7 +68,7 @@ struct AudioPrivate
 		MeWatchState state;
 	} meWatch;
 
-	AudioPrivate(RGSSThreadData &rtData)
+	AlAudioPrivate(RGSSThreadData &rtData)
 	    : bgs(ALStream::Looped, "bgs"),
 	      me(ALStream::NotLooped, "me"),
 	      se(rtData.config),
@@ -82,10 +82,10 @@ struct AudioPrivate
         
 		meWatch.state = MeNotPlaying;
 		meWatch.thread = createSDLThread
-			<AudioPrivate, &AudioPrivate::meWatchFun>(this, "audio_mewatch");
+			<AlAudioPrivate, &AlAudioPrivate::meWatchFun>(this, "audio_mewatch");
 	}
 
-	~AudioPrivate()
+	~AlAudioPrivate()
 	{
 		meWatch.termReq.set();
 		SDL_WaitThread(meWatch.thread, 0);
@@ -284,16 +284,16 @@ struct AudioPrivate
 	}
 };
 
-Audio::Audio(RGSSThreadData &rtData)
-	: p(new AudioPrivate(rtData))
+AlAudio::AlAudio(RGSSThreadData &rtData)
+	: p(new AlAudioPrivate(rtData))
 {}
 
 
-void Audio::bgmPlay(const char *filename,
-                    int volume,
-                    int pitch,
-                    float pos,
-                    int track)
+void AlAudio::bgmPlay(const char *filename,
+                      int volume,
+                      int pitch,
+                      float pos,
+                      int track)
 {
     if (track == -127) {
         for (int i = 0; i < (int)p->bgmTracks.size(); i++) {
@@ -308,7 +308,7 @@ void Audio::bgmPlay(const char *filename,
 	p->getTrackByIndex(track)->play(filename, volume, pitch, pos);
 }
 
-void Audio::bgmStop(int track)
+void AlAudio::bgmStop(int track)
 {
     if (track == -127) {
         for (auto track : p->bgmTracks)
@@ -320,7 +320,7 @@ void Audio::bgmStop(int track)
     p->getTrackByIndex(track)->stop();
 }
 
-void Audio::bgmFade(int time, int track)
+void AlAudio::bgmFade(int time, int track)
 {
     if (track == -127) {
         for (auto track : p->bgmTracks)
@@ -332,7 +332,7 @@ void Audio::bgmFade(int time, int track)
     p->getTrackByIndex(track)->fadeOut(time);
 }
 
-int Audio::bgmGetVolume(int track)
+int AlAudio::bgmGetVolume(int track)
 {
     if (track == -127)
         return p->bgmTracks[0]->getVolume(AudioStream::BaseRatio) * 100;
@@ -340,7 +340,7 @@ int Audio::bgmGetVolume(int track)
     return p->getTrackByIndex(track)->getVolume(AudioStream::Base) * 100;
 }
 
-void Audio::bgmSetVolume(int volume, int track)
+void AlAudio::bgmSetVolume(int volume, int track)
 {
     float vol = volume / 100.0;
     if (track == -127) {
@@ -353,71 +353,71 @@ void Audio::bgmSetVolume(int volume, int track)
 }
 
 
-void Audio::bgsPlay(const char *filename,
-                    int volume,
-                    int pitch,
-                    float pos)
+void AlAudio::bgsPlay(const char *filename,
+                      int volume,
+                      int pitch,
+                      float pos)
 {
 	p->bgs.play(filename, volume, pitch, pos);
 }
 
-void Audio::bgsStop()
+void AlAudio::bgsStop()
 {
 	p->bgs.stop();
 }
 
-void Audio::bgsFade(int time)
+void AlAudio::bgsFade(int time)
 {
 	p->bgs.fadeOut(time);
 }
 
 
-void Audio::mePlay(const char *filename,
-                   int volume,
-                   int pitch)
+void AlAudio::mePlay(const char *filename,
+                     int volume,
+                     int pitch)
 {
 	p->me.play(filename, volume, pitch);
 }
 
-void Audio::meStop()
+void AlAudio::meStop()
 {
 	p->me.stop();
 }
 
-void Audio::meFade(int time)
+void AlAudio::meFade(int time)
 {
 	p->me.fadeOut(time);
 }
 
 
-void Audio::sePlay(const char *filename,
-                   int volume,
-                   int pitch)
+void AlAudio::sePlay(const char *filename,
+                     int volume,
+                     int pitch)
 {
 	p->se.play(filename, volume, pitch);
 }
 
-void Audio::seStop()
+void AlAudio::seStop()
 {
 	p->se.stop();
 }
 
-void Audio::setupMidi()
+void AlAudio::setupMidi()
 {
 	shState->midiState().initIfNeeded(shState->config());
 }
 
-float Audio::bgmPos(int track)
+float AlAudio::bgmPos(int track)
 {
 	return p->getTrackByIndex(track)->playingOffset();
 }
 
-float Audio::bgsPos()
+float AlAudio::bgsPos()
 {
 	return p->bgs.playingOffset();
 }
 
-void Audio::reset()
+void AlAudio::reset()
 {
     for (auto track : p->bgmTracks) {
     	track->stop();
@@ -428,4 +428,4 @@ void Audio::reset()
 	p->se.stop();
 }
 
-Audio::~Audio() { delete p; }
+AlAudio::~AlAudio() { delete p; }

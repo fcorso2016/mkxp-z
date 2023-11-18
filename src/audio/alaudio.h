@@ -32,10 +32,10 @@
  *   integers that _look_ like sample offsets but I can't
  *   quite make out their meaning yet) */
 
-struct AudioPrivate;
+struct AlAudioPrivate;
 struct RGSSThreadData;
 
-class Audio
+class AlAudio
 {
 public:
 	void bgmPlay(const char *filename,
@@ -73,12 +73,12 @@ public:
 	void reset();
 
 private:
-	Audio(RGSSThreadData &rtData);
-	~Audio();
+	AlAudio(RGSSThreadData &rtData);
+	~AlAudio();
 
 	friend struct SharedStatePrivate;
 
-	AudioPrivate *p;
+	AlAudioPrivate *p;
 };
 
 #endif // AUDIO_H
