@@ -19,7 +19,7 @@
  ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "graphics.h"
+#include "openglgraphics.h"
 
 #include "alstream.h"
 #include "audio.h"
@@ -768,7 +768,7 @@ private:
     }
 };
 
-struct GraphicsPrivate {
+struct OpenGlGraphicsPrivate {
     /* Screen resolution, ie. the resolution at which
      * RGSS renders at (settable with Graphics.resize_screen).
      * Can only be changed from within RGSS */
@@ -829,7 +829,7 @@ struct GraphicsPrivate {
      * (disposed on reset) */
     IntruList<Disposable> dispList;
     
-    GraphicsPrivate(RGSSThreadData *rtData)
+    OpenGlGraphicsPrivate(RGSSThreadData *rtData)
     : scRes(DEF_SCREEN_W, DEF_SCREEN_H), scResLores(scRes), scSize(scRes),
     winSize(rtData->config.defScreenW, rtData->config.defScreenH),
     screen(scRes.x, scRes.y), threadData(rtData),
@@ -861,7 +861,7 @@ struct GraphicsPrivate {
         fpsLimiter.resetFrameAdjust();
     }
     
-    ~GraphicsPrivate() {
+    ~OpenGlGraphicsPrivate() {
         TEXFBO::fini(frozenScene);
         TEXFBO::fini(integerScaleBuffer);
         SDL_DestroyMutex(avgFPSLock);
@@ -1132,8 +1132,7 @@ struct GraphicsPrivate {
     }
 };
 
-OpenGlGraphics::OpenGlGraphics(RGSSThreadData *data) {
-    p = new GraphicsPrivate(data);
+OpenGlGraphics::OpenGlGraphics(RGSSThreadData *data) : p(std::make_unique<OpenGlGraphicsPrivate>(data)) {
     if (data->config.syncToRefreshrate) {
         p->frameRate = data->refreshRate;
         p->fpsLimiter.disabled = true;
@@ -1144,7 +1143,7 @@ OpenGlGraphics::OpenGlGraphics(RGSSThreadData *data) {
     }
 }
 
-OpenGlGraphics::~OpenGlGraphics() { delete p; }
+OpenGlGraphics::~OpenGlGraphics() = default;
 
 double OpenGlGraphics::getDelta() {
     return shState->runTime() - p->last_update;
@@ -1322,9 +1321,9 @@ void OpenGlGraphics::frameReset() {p->fpsLimiter.resetFrameAdjust();}
 
 static void guardDisposed() {}
 
-DEF_ATTR_RD_SIMPLE(Graphics, FrameRate, int, p->frameRate)
+DEF_ATTR_RD_SIMPLE(OpenGlGraphics, FrameRate, int, p->frameRate)
 
-DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
+DEF_ATTR_SIMPLE(OpenGlGraphics, FrameCount, int, p->frameCount)
 
 void OpenGlGraphics::setFrameRate(int value) {
     p->frameRate = clamp(value, 10, 120);

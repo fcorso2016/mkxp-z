@@ -28,7 +28,7 @@ class Scene;
 class Bitmap;
 class Disposable;
 struct RGSSThreadData;
-struct GraphicsPrivate;
+struct OpenGlGraphicsPrivate;
 struct AtomicFlag;
 struct THEORAPLAY_VideoFrame;
 struct Movie;
@@ -36,79 +36,76 @@ struct Movie;
 class Graphics
 {
 public:
-    double getDelta();
-    double lastUpdate();
-    
-	void update(bool checkForShutdown = true);
-	void freeze();
-	void transition(int duration = 8,
+    virtual ~Graphics() = default;
+
+    virtual double getDelta() = 0;
+    virtual double lastUpdate() = 0;
+
+    virtual void update(bool checkForShutdown = true) = 0;
+    virtual void freeze() = 0;
+    virtual void transition(int duration = 8,
 	                const char *filename = "",
-	                int vague = 40);
-	void frameReset();
+	                int vague = 40) = 0;
+    virtual void frameReset() = 0;
 
-	DECL_ATTR( FrameRate,  int )
-	DECL_ATTR( FrameCount, int )
-	DECL_ATTR( Brightness, int )
+    DECL_ATTR_PURE( FrameRate,  int )
+    DECL_ATTR_PURE( FrameCount, int )
+    DECL_ATTR_PURE( Brightness, int )
 
-	void wait(int duration);
-	void fadeout(int duration);
-	void fadein(int duration);
+    virtual void wait(int duration) = 0;
+    virtual void fadeout(int duration) = 0;
+    virtual void fadein(int duration) = 0;
 
-	Bitmap *snapToBitmap();
+    virtual Bitmap *snapToBitmap() = 0;
 
-	int width() const;
-	int height() const;
-	int widthHires() const;
-	int heightHires() const;
-	bool isPingPongFramebufferActive() const;
-    int displayContentWidth() const;
-    int displayContentHeight() const;
-    int displayWidth() const;
-    int displayHeight() const;
-	void resizeScreen(int width, int height);
-    void resizeWindow(int width, int height, bool center=false);
-	void drawMovieFrame(const THEORAPLAY_VideoFrame* video, Bitmap *videoBitmap);
-	bool updateMovieInput(Movie *movie);
-	void playMovie(const char *filename, int volume, bool skippable);
-	void screenshot(const char *filename);
+    virtual int width() const;
+    virtual int height() const;
+    virtual int widthHires() const;
+    virtual int heightHires() const;
+    virtual bool isPingPongFramebufferActive() const;
+    virtual int displayContentWidth() const;
+    virtual int displayContentHeight() const;
+    virtual int displayWidth() const;
+    virtual int displayHeight() const;
+    virtual void resizeScreen(int width, int height) = 0;
+    virtual void resizeWindow(int width, int height, bool center=false) = 0;
+    virtual void drawMovieFrame(const THEORAPLAY_VideoFrame* video, Bitmap *videoBitmap) = 0;
+    virtual bool updateMovieInput(Movie *movie) = 0;
+    virtual void playMovie(const char *filename, int volume, bool skippable) = 0;
+    virtual void screenshot(const char *filename) = 0;
 
-	void reset();
-    void center();
+    virtual void reset() = 0;
+    virtual void center() = 0;
 
     /* Non-standard extension */
-    DECL_ATTR( Fullscreen, bool )
-    DECL_ATTR( ShowCursor, bool )
-    DECL_ATTR( Scale,    double )
-    DECL_ATTR( Frameskip, bool )
-    DECL_ATTR( FixedAspectRatio, bool )
-    DECL_ATTR( SmoothScaling, int )
-    DECL_ATTR( IntegerScaling, bool )
-    DECL_ATTR( LastMileScaling, bool )
-    DECL_ATTR( Threadsafe, bool )
-    double averageFrameRate();
+    DECL_ATTR_PURE( Fullscreen, bool )
+    DECL_ATTR_PURE( ShowCursor, bool )
+    DECL_ATTR_PURE( Scale,    double )
+    DECL_ATTR_PURE( Frameskip, bool )
+    DECL_ATTR_PURE( FixedAspectRatio, bool )
+    DECL_ATTR_PURE( SmoothScaling, int )
+    DECL_ATTR_PURE( IntegerScaling, bool )
+    DECL_ATTR_PURE( LastMileScaling, bool )
+    DECL_ATTR_PURE( Threadsafe, bool )
+    virtual double averageFrameRate() = 0;
 
 	/* <internal> */
-	Scene *getScreen() const;
+    virtual Scene *getScreen() const;
 	/* Repaint screen with static image until exitCond
 	 * is set. Observes reset flag on top of shutdown
 	 * if "checkReset" */
-	void repaintWait(const AtomicFlag &exitCond,
-	                 bool checkReset = true);
-    
-    void lock(bool force = false);
-    void unlock(bool force = false);
+    virtual void repaintWait(const AtomicFlag &exitCond,
+	                 bool checkReset = true) = 0;
 
-private:
-	Graphics(RGSSThreadData *data);
-	~Graphics();
+    virtual void lock(bool force = false) = 0;
+    virtual void unlock(bool force = false) = 0;
 
-	void addDisposable(Disposable *);
-	void remDisposable(Disposable *);
 
-	friend struct SharedStatePrivate;
-	friend class Disposable;
+protected:
+    virtual void addDisposable(Disposable *) = 0;
+    virtual void remDisposable(Disposable *) = 0;
 
-	GraphicsPrivate *p;
+    friend class Disposable;
 };
 
 #define GFX_LOCK shState->graphics().lock()
