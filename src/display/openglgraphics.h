@@ -94,6 +94,7 @@ private:
     void remDisposable(Disposable *) override;
 
     friend struct SharedStatePrivate;
+    friend std::unique_ptr<OpenGlGraphics>::deleter_type;
 
     std::unique_ptr<OpenGlGraphicsPrivate> p;
 };

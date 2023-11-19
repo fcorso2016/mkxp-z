@@ -37,6 +37,9 @@
 #include "binding.h"
 #include "exception.h"
 #include "sharedmidistate.h"
+#include "openglgraphics.h"
+#include "userinput.h"
+#include "alaudio.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -74,9 +77,9 @@ struct SharedStatePrivate
 
 	SharedMidiState midiState;
 
-	Graphics graphics;
-	Input input;
-	Audio audio;
+	std::unique_ptr<Graphics> graphics;
+	std::unique_ptr<Input> input;
+	std::unique_ptr<Audio> audio;
 
 	GLState _glState;
 
@@ -109,9 +112,9 @@ struct SharedStatePrivate
 	      rtData(*threadData),
 	      config(threadData->config),
 	      midiState(threadData->config),
-	      graphics(threadData),
-	      input(*threadData),
-	      audio(*threadData),
+	      graphics(new OpenGlGraphics(threadData)),
+	      input(new UserInput(*threadData)),
+	      audio(new AlAudio(*threadData)),
 	      _glState(threadData->config),
 	      fontState(threadData->config),
 	      stampCounter(0)
@@ -216,6 +219,12 @@ void SharedState::setScreen(Scene &screen)
 		return p->lower; \
 	}
 
+#define SAPTR(type, lower) \
+    type &SharedState :: lower() const \
+    {                      \
+        return *p->lower;  \
+    }
+
 GSATT(void*, bindingData)
 GSATT(SDL_Window*, sdlWindow)
 GSATT(Scene*, screen)
@@ -223,9 +232,9 @@ GSATT(EventThread&, eThread)
 GSATT(RGSSThreadData&, rtData)
 GSATT(Config&, config)
 GSATT(FileSystem&, fileSystem)
-GSATT(Graphics&, graphics)
-GSATT(Input&, input)
-GSATT(Audio&, audio)
+SAPTR(Graphics, graphics)
+SAPTR(Input, input)
+SAPTR(Audio, audio)
 GSATT(GLState&, _glState)
 GSATT(ShaderSet&, shaders)
 GSATT(TexPool&, texPool)
@@ -370,7 +379,7 @@ unsigned int SharedState::genTimeStamp()
 
 SharedState::SharedState(RGSSThreadData *threadData) : p(std::make_unique<SharedStatePrivate>(threadData))
 {
-	p->screen = p->graphics.getScreen();
+	p->screen = p->graphics->getScreen();
 }
 
 SharedState::~SharedState() = default;
