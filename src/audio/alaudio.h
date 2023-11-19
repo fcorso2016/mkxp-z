@@ -31,54 +31,57 @@
  *   in seconds of playback. (RGSS3 seems to use large
  *   integers that _look_ like sample offsets but I can't
  *   quite make out their meaning yet) */
+#include "audio.h"
+
+#include <memory>
 
 struct AlAudioPrivate;
 struct RGSSThreadData;
 
-class AlAudio
+class AlAudio : public Audio
 {
 public:
 	void bgmPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
 	             float pos = 0,
-                 int track = -127);
-	void bgmStop(int track = -127);
-	void bgmFade(int time, int track = -127);
-    int bgmGetVolume(int track = -127);
-    void bgmSetVolume(int volume = 100, int track = -127);
+                 int track = -127) override;
+	void bgmStop(int track = -127) override;
+	void bgmFade(int time, int track = -127) override;
+    int bgmGetVolume(int track = -127) override;
+    void bgmSetVolume(int volume = 100, int track = -127) override;
 
 	void bgsPlay(const char *filename,
 	             int volume = 100,
 	             int pitch = 100,
-	             float pos = 0);
-	void bgsStop();
-	void bgsFade(int time);
+	             float pos = 0) override;
+	void bgsStop() override;
+	void bgsFade(int time) override;
 
 	void mePlay(const char *filename,
 	            int volume = 100,
-	            int pitch = 100);
-	void meStop();
-	void meFade(int time);
+	            int pitch = 100) override;
+	void meStop() override;
+	void meFade(int time) override;
 
 	void sePlay(const char *filename,
 	            int volume = 100,
-	            int pitch = 100);
-	void seStop();
+	            int pitch = 100) override;
+	void seStop() override;
 
-	void setupMidi();
-	float bgmPos(int track = 0);
-	float bgsPos();
+	void setupMidi() override;
+	float bgmPos(int track = 0) override;
+	float bgsPos() override;
 
-	void reset();
+	void reset() override;
 
 private:
-	AlAudio(RGSSThreadData &rtData);
-	~AlAudio();
+    explicit AlAudio(RGSSThreadData &rtData);
+	~AlAudio() override;
 
 	friend struct SharedStatePrivate;
 
-	AlAudioPrivate *p;
+	std::unique_ptr<AlAudioPrivate> p;
 };
 
 #endif // AUDIO_H

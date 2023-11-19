@@ -19,7 +19,7 @@
 ** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "audio.h"
+#include "alaudio.h"
 
 #include "audiostream.h"
 #include "soundemitter.h"
@@ -285,7 +285,7 @@ struct AlAudioPrivate
 };
 
 AlAudio::AlAudio(RGSSThreadData &rtData)
-	: p(new AlAudioPrivate(rtData))
+	: p(std::make_unique<AlAudioPrivate>(rtData))
 {}
 
 
@@ -428,4 +428,4 @@ void AlAudio::reset()
 	p->se.stop();
 }
 
-AlAudio::~AlAudio() { delete p; }
+AlAudio::~AlAudio() = default;
