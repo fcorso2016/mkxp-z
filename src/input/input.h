@@ -8,9 +8,14 @@
 // ====================================================================================================================
 #pragma once
 
+#include <unordered_map>
 #include <SDL_gamecontroller.h>
 #include <string>
 #include <vector>
+
+extern std::unordered_map<int, int> vKeyToScancode;
+extern std::unordered_map<std::string, int> strToScancode;
+extern std::unordered_map<std::string, SDL_GameControllerButton> strToGCButton;
 
 class Input {
 public:

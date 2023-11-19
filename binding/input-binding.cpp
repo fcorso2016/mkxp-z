@@ -53,7 +53,7 @@ static int getButtonArg(VALUE *argv) {
     } else if (SYMBOL_P(*argv) && rgssVer >= 3) {
         VALUE symHash = getRbData()->buttoncodeHash;
 #if RAPI_FULL > 187
-        num = FIX2INT(rb_hash_lookup2(symHash, *argv, INT2FIX(Input::None)));
+        num = FIX2INT(rb_hash_lookup2(symHash, *argv, INT2FIX((int)Input::ButtonCode::None)));
 #else
         VALUE res = rb_hash_aref(symHash, *argv);
         if (!NIL_P(res))
@@ -534,32 +534,32 @@ RB_METHOD(inputSetClipboard) {
 struct {
     const char *str;
     Input::ButtonCode val;
-} static buttonCodes[] = {{"DOWN", Input::Down},
-    {"LEFT", Input::Left},
-    {"RIGHT", Input::Right},
-    {"UP", Input::Up},
-    {"C", Input::C},
-    {"Z", Input::Z},
-    {"A", Input::A},
-    {"B", Input::B},
-    {"X", Input::X},
-    {"Y", Input::Y},
-    {"L", Input::L},
-    {"R", Input::R},
-    {"SHIFT", Input::Shift},
-    {"CTRL", Input::Ctrl},
-    {"ALT", Input::Alt},
-    {"F5", Input::F5},
-    {"F6", Input::F6},
-    {"F7", Input::F7},
-    {"F8", Input::F8},
-    {"F9", Input::F9},
+} static buttonCodes[] = {{"DOWN", Input::ButtonCode::Down},
+    {"LEFT", Input::ButtonCode::Left},
+    {"RIGHT", Input::ButtonCode::Right},
+    {"UP", Input::ButtonCode::Up},
+    {"C", Input::ButtonCode::C},
+    {"Z", Input::ButtonCode::Z},
+    {"A", Input::ButtonCode::A},
+    {"B", Input::ButtonCode::B},
+    {"X", Input::ButtonCode::X},
+    {"Y", Input::ButtonCode::Y},
+    {"L", Input::ButtonCode::L},
+    {"R", Input::ButtonCode::R},
+    {"SHIFT", Input::ButtonCode::Shift},
+    {"CTRL", Input::ButtonCode::Ctrl},
+    {"ALT", Input::ButtonCode::Alt},
+    {"F5", Input::ButtonCode::F5},
+    {"F6", Input::ButtonCode::F6},
+    {"F7", Input::ButtonCode::F7},
+    {"F8", Input::ButtonCode::F8},
+    {"F9", Input::ButtonCode::F9},
     
-    {"MOUSELEFT", Input::MouseLeft},
-    {"MOUSEMIDDLE", Input::MouseMiddle},
-    {"MOUSERIGHT", Input::MouseRight},
-    {"MOUSEX1", Input::MouseX1},
-    {"MOUSEX2", Input::MouseX2}
+    {"MOUSELEFT", Input::ButtonCode::MouseLeft},
+    {"MOUSEMIDDLE", Input::ButtonCode::MouseMiddle},
+    {"MOUSERIGHT", Input::ButtonCode::MouseRight},
+    {"MOUSEX1", Input::ButtonCode::MouseX1},
+    {"MOUSEX2", Input::ButtonCode::MouseX2}
 };
 
 static elementsN(buttonCodes);
@@ -620,7 +620,7 @@ void inputBindingInit() {
         
         for (size_t i = 0; i < buttonCodesN; ++i) {
             ID sym = rb_intern(buttonCodes[i].str);
-            VALUE val = INT2FIX(buttonCodes[i].val);
+            VALUE val = INT2FIX((int)buttonCodes[i].val);
             
             /* In RGSS3 all Input::XYZ constants are equal to :XYZ symbols,
              * to be compatible with the previous convention */
@@ -633,7 +633,7 @@ void inputBindingInit() {
     } else {
         for (size_t i = 0; i < buttonCodesN; ++i) {
             ID sym = rb_intern(buttonCodes[i].str);
-            VALUE val = INT2FIX(buttonCodes[i].val);
+            VALUE val = INT2FIX((int)buttonCodes[i].val);
             
             rb_const_set(module, sym, val);
         }

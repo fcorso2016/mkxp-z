@@ -53,7 +53,7 @@ static bool pointInRect(const SDL_Rect &r, int x, int y)
 	return (x >= r.x && x <= r.x+r.w && y >= r.y && y <= r.y+r.h);
 }
 
-typedef SettingsMenuPrivate SMP;
+using SMP = SettingsMenuPrivate;
 
 #define BTN_STRING_CUSTOM(btn, name) { Input:: btn, name }
 #define BTN_STRING(btn) BTN_STRING_CUSTOM(btn, #btn)
@@ -63,18 +63,18 @@ struct VButton
 	const char *str;
 } static vButtons[] =
 {
-	BTN_STRING(Up),
-	BTN_STRING(Down),
-	BTN_STRING(L),
-	BTN_STRING(Left),
-	BTN_STRING(Right),
-	BTN_STRING(R),
-	BTN_STRING(A),
-	BTN_STRING(B),
-  BTN_STRING(C),
-	BTN_STRING(X),
-	BTN_STRING(Y),
-  BTN_STRING(Z)
+	BTN_STRING(Input::ButtonCode::Up),
+	BTN_STRING(Input::ButtonCode::Down),
+	BTN_STRING(Input::ButtonCode::L),
+	BTN_STRING(Input::ButtonCode::Left),
+	BTN_STRING(Input::ButtonCode::Right),
+	BTN_STRING(Input::ButtonCode::R),
+	BTN_STRING(Input::ButtonCode::A),
+	BTN_STRING(Input::ButtonCode::B),
+    BTN_STRING(Input::ButtonCode::C),
+	BTN_STRING(Input::ButtonCode::X),
+	BTN_STRING(Input::ButtonCode::Y),
+    BTN_STRING(Input::ButtonCode::Z)
 };
 
 static elementsN(vButtons);

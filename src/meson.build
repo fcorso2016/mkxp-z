@@ -137,7 +137,7 @@ main_source = files(
     'display/autotilesvx.cpp',
     'display/bitmap.cpp',
     'display/font.cpp',
-    'display/graphics.cpp',
+    'display/openglgraphics.cpp',
     'display/plane.cpp',
     'display/sprite.cpp',
     'display/tilemap.cpp',

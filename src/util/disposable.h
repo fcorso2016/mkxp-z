@@ -75,7 +75,7 @@ private:
 	virtual void releaseResources() = 0;
 	virtual const char *klassName() const = 0;
 
-	friend class Graphics;
+	friend class OpenGlGraphics;
 
 	bool disposed;
 	IntruListLink<Disposable> link;

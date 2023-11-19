@@ -24,15 +24,10 @@
 
 #include "input.h"
 
-#include <unordered_map>
 #include <memory>
 
 struct UserInputPrivate;
 struct RGSSThreadData;
-
-extern std::unordered_map<int, int> vKeyToScancode;
-extern std::unordered_map<std::string, int> strToScancode;
-extern std::unordered_map<std::string, SDL_GameControllerButton> strToGCButton;
 
 class UserInput : public Input
 {

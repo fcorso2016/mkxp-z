@@ -58,15 +58,15 @@ public:
 
     virtual Bitmap *snapToBitmap() = 0;
 
-    virtual int width() const;
-    virtual int height() const;
-    virtual int widthHires() const;
-    virtual int heightHires() const;
-    virtual bool isPingPongFramebufferActive() const;
-    virtual int displayContentWidth() const;
-    virtual int displayContentHeight() const;
-    virtual int displayWidth() const;
-    virtual int displayHeight() const;
+    virtual int width() const = 0;
+    virtual int height() const = 0;
+    virtual int widthHires() const = 0;
+    virtual int heightHires() const = 0;
+    virtual bool isPingPongFramebufferActive() const = 0;
+    virtual int displayContentWidth() const = 0;
+    virtual int displayContentHeight() const = 0;
+    virtual int displayWidth() const = 0;
+    virtual int displayHeight() const = 0;
     virtual void resizeScreen(int width, int height) = 0;
     virtual void resizeWindow(int width, int height, bool center=false) = 0;
     virtual void drawMovieFrame(const THEORAPLAY_VideoFrame* video, Bitmap *videoBitmap) = 0;
@@ -90,7 +90,7 @@ public:
     virtual double averageFrameRate() = 0;
 
 	/* <internal> */
-    virtual Scene *getScreen() const;
+    virtual Scene *getScreen() const = 0;
 	/* Repaint screen with static image until exitCond
 	 * is set. Observes reset flag on top of shutdown
 	 * if "checkReset" */

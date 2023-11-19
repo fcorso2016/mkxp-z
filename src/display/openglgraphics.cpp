@@ -324,7 +324,7 @@ struct Movie
             // Check for attempted skip
             if (skippable) {
                 shState->input().update();
-                if  (shState->input().isTriggered(Input::C) || shState->input().isTriggered(Input::B)) break;
+                if  (shState->input().isTriggered((int)Input::ButtonCode::C) || shState->input().isTriggered((int)Input::ButtonCode::B)) break;
             }
             
             const Uint32 now = SDL_GetTicks() - baseTicks;
@@ -1541,7 +1541,7 @@ void OpenGlGraphics::screenshot(const char *filename) {
     delete ss;
 }
 
-DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
+DEF_ATTR_RD_SIMPLE(OpenGlGraphics, Brightness, int, p->brightness)
 
 void OpenGlGraphics::setBrightness(int value) {
     value = clamp(value, 0, 255);
@@ -1723,5 +1723,9 @@ void OpenGlGraphics::unlock(bool force) {
 void OpenGlGraphics::addDisposable(Disposable *d) { p->dispList.append(d->link); }
 
 void OpenGlGraphics::remDisposable(Disposable *d) { p->dispList.remove(d->link); }
+
+void OpenGlGraphics::drawMovieFrame(const THEORAPLAY_VideoFrame *video, Bitmap *videoBitmap) {
+    // TODO: Actually define this thing
+}
 
 #undef GRAPHICS_THREAD_LOCK

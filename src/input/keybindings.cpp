@@ -67,35 +67,35 @@ struct CtrlBindingData
 /* Common */
 static const KbBindingData defaultKbBindings[] =
 {
-	{ SDL_SCANCODE_LEFT,   Input::Left  },
-	{ SDL_SCANCODE_RIGHT,  Input::Right },
-	{ SDL_SCANCODE_UP,     Input::Up    },
-	{ SDL_SCANCODE_DOWN,   Input::Down  },
+	{ SDL_SCANCODE_LEFT,   Input::ButtonCode::Left  },
+	{ SDL_SCANCODE_RIGHT,  Input::ButtonCode::Right },
+	{ SDL_SCANCODE_UP,     Input::ButtonCode::Up    },
+	{ SDL_SCANCODE_DOWN,   Input::ButtonCode::Down  },
     
-	{ SDL_SCANCODE_SPACE,  Input::C     },
-	{ SDL_SCANCODE_RETURN, Input::C     },
-	{ SDL_SCANCODE_ESCAPE, Input::B     },
-	{ SDL_SCANCODE_KP_0,   Input::B     },
-	{ SDL_SCANCODE_LSHIFT, Input::A     },
-	{ SDL_SCANCODE_X,      Input::B     },
-	{ SDL_SCANCODE_D,      Input::Z     },
-	{ SDL_SCANCODE_Q,      Input::L     },
-	{ SDL_SCANCODE_W,      Input::R     },
-	{ SDL_SCANCODE_A,      Input::X     },
-	{ SDL_SCANCODE_S,      Input::Y     }
+	{ SDL_SCANCODE_SPACE,  Input::ButtonCode::C     },
+	{ SDL_SCANCODE_RETURN, Input::ButtonCode::C     },
+	{ SDL_SCANCODE_ESCAPE, Input::ButtonCode::B     },
+	{ SDL_SCANCODE_KP_0,   Input::ButtonCode::B     },
+	{ SDL_SCANCODE_LSHIFT, Input::ButtonCode::A     },
+	{ SDL_SCANCODE_X,      Input::ButtonCode::B     },
+	{ SDL_SCANCODE_D,      Input::ButtonCode::Z     },
+	{ SDL_SCANCODE_Q,      Input::ButtonCode::L     },
+	{ SDL_SCANCODE_W,      Input::ButtonCode::R     },
+	{ SDL_SCANCODE_A,      Input::ButtonCode::X     },
+	{ SDL_SCANCODE_S,      Input::ButtonCode::Y     }
 };
 
 /* RGSS1 */
 static const KbBindingData defaultKbBindings1[] =
 {
-	{ SDL_SCANCODE_Z,      Input::A     },
-	{ SDL_SCANCODE_C,      Input::C     },
+	{ SDL_SCANCODE_Z,      Input::ButtonCode::A     },
+	{ SDL_SCANCODE_C,      Input::ButtonCode::C     },
 };
 
 /* RGSS2 and higher */
 static const KbBindingData defaultKbBindings2[] =
 {
-	{ SDL_SCANCODE_Z,      Input::C     }
+	{ SDL_SCANCODE_Z,      Input::ButtonCode::C     }
 };
 
 static elementsN(defaultKbBindings);
@@ -104,19 +104,19 @@ static elementsN(defaultKbBindings2);
 
 static const CtrlBindingData defaultCtrlBindings[] =
 {
-	{ SDL_CONTROLLER_BUTTON_X, Input::A  },
-	{ SDL_CONTROLLER_BUTTON_B, Input::B  },
-	{ SDL_CONTROLLER_BUTTON_A, Input::C },
-	{ SDL_CONTROLLER_BUTTON_Y, Input::X  },
-	{ SDL_CONTROLLER_BUTTON_LEFTSTICK, Input::Y  },
-	{ SDL_CONTROLLER_BUTTON_RIGHTSTICK, Input::Z },
-	{ SDL_CONTROLLER_BUTTON_LEFTSHOULDER, Input::L  },
-	{ SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, Input::R  },
+	{ SDL_CONTROLLER_BUTTON_X, Input::ButtonCode::A  },
+	{ SDL_CONTROLLER_BUTTON_B, Input::ButtonCode::B  },
+	{ SDL_CONTROLLER_BUTTON_A, Input::ButtonCode::C },
+	{ SDL_CONTROLLER_BUTTON_Y, Input::ButtonCode::X  },
+	{ SDL_CONTROLLER_BUTTON_LEFTSTICK, Input::ButtonCode::Y  },
+	{ SDL_CONTROLLER_BUTTON_RIGHTSTICK, Input::ButtonCode::Z },
+	{ SDL_CONTROLLER_BUTTON_LEFTSHOULDER, Input::ButtonCode::L  },
+	{ SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, Input::ButtonCode::R  },
     
-    { SDL_CONTROLLER_BUTTON_DPAD_UP, Input::Up },
-    { SDL_CONTROLLER_BUTTON_DPAD_DOWN, Input::Down },
-    { SDL_CONTROLLER_BUTTON_DPAD_LEFT, Input::Left },
-    { SDL_CONTROLLER_BUTTON_DPAD_RIGHT, Input::Right }
+    { SDL_CONTROLLER_BUTTON_DPAD_UP, Input::ButtonCode::Up },
+    { SDL_CONTROLLER_BUTTON_DPAD_DOWN, Input::ButtonCode::Down },
+    { SDL_CONTROLLER_BUTTON_DPAD_LEFT, Input::ButtonCode::Left },
+    { SDL_CONTROLLER_BUTTON_DPAD_RIGHT, Input::ButtonCode::Right }
 };
 
 static elementsN(defaultCtrlBindings);
@@ -152,10 +152,10 @@ BDescVec genDefaultBindings(const Config &conf)
 	for (size_t i = 0; i < defaultCtrlBindingsN; ++i)
 		defaultCtrlBindings[i].add(d);
 
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX, Negative, Input::Left );
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX, Positive, Input::Right);
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY, Negative, Input::Up   );
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY, Positive, Input::Down );
+	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX, Negative, Input::ButtonCode::Left );
+	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX, Positive, Input::ButtonCode::Right);
+	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY, Negative, Input::ButtonCode::Up   );
+	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY, Positive, Input::ButtonCode::Down );
 
 	return d;
 }
@@ -221,13 +221,13 @@ static bool verifyDesc(const BindingDesc &desc)
 {
 	const Input::ButtonCode codes[] =
 	{
-	    Input::None,
-	    Input::Down, Input::Left, Input::Right, Input::Up,
-	    Input::A, Input::B, Input::C,
-	    Input::X, Input::Y, Input::Z,
-	    Input::L, Input::R,
-	    Input::Shift, Input::Ctrl, Input::Alt,
-	    Input::F5, Input::F6, Input::F7, Input::F8, Input::F9
+	    Input::ButtonCode::None,
+	    Input::ButtonCode::Down, Input::ButtonCode::Left, Input::ButtonCode::Right, Input::ButtonCode::Up,
+	    Input::ButtonCode::A, Input::ButtonCode::B, Input::ButtonCode::C,
+	    Input::ButtonCode::X, Input::ButtonCode::Y, Input::ButtonCode::Z,
+	    Input::ButtonCode::L, Input::ButtonCode::R,
+	    Input::ButtonCode::Shift, Input::ButtonCode::Ctrl, Input::ButtonCode::Alt,
+	    Input::ButtonCode::F5, Input::ButtonCode::F6, Input::ButtonCode::F7, Input::ButtonCode::F8, Input::ButtonCode::F9
 	};
 
 	elementsN(codes);
