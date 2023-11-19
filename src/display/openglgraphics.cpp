@@ -1132,7 +1132,7 @@ struct GraphicsPrivate {
     }
 };
 
-Graphics::Graphics(RGSSThreadData *data) {
+OpenGlGraphics::OpenGlGraphics(RGSSThreadData *data) {
     p = new GraphicsPrivate(data);
     if (data->config.syncToRefreshrate) {
         p->frameRate = data->refreshRate;
@@ -1144,17 +1144,17 @@ Graphics::Graphics(RGSSThreadData *data) {
     }
 }
 
-Graphics::~Graphics() { delete p; }
+OpenGlGraphics::~OpenGlGraphics() { delete p; }
 
-double Graphics::getDelta() {
+double OpenGlGraphics::getDelta() {
     return shState->runTime() - p->last_update;
 }
 
-double Graphics::lastUpdate() {
+double OpenGlGraphics::lastUpdate() {
     return p->last_update;
 }
 
-void Graphics::update(bool checkForShutdown) {
+void OpenGlGraphics::update(bool checkForShutdown) {
     p->threadData->rqWindowAdjust.wait();
     p->last_update = shState->runTime();
     
@@ -1199,7 +1199,7 @@ void Graphics::update(bool checkForShutdown) {
     p->redrawScreen();
 }
 
-void Graphics::freeze() {
+void OpenGlGraphics::freeze() {
     p->frozen = true;
     
     p->checkShutDownReset();
@@ -1209,7 +1209,7 @@ void Graphics::freeze() {
     p->compositeToBuffer(p->frozenScene);
 }
 
-void Graphics::transition(int duration, const char *filename, int vague) {
+void OpenGlGraphics::transition(int duration, const char *filename, int vague) {
     p->checkSyncLock();
     
     if (!p->frozen)
@@ -1318,7 +1318,7 @@ void Graphics::transition(int duration, const char *filename, int vague) {
     p->frozen = false;
 }
 
-void Graphics::frameReset() {p->fpsLimiter.resetFrameAdjust();}
+void OpenGlGraphics::frameReset() {p->fpsLimiter.resetFrameAdjust();}
 
 static void guardDisposed() {}
 
@@ -1326,7 +1326,7 @@ DEF_ATTR_RD_SIMPLE(Graphics, FrameRate, int, p->frameRate)
 
 DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
 
-void Graphics::setFrameRate(int value) {
+void OpenGlGraphics::setFrameRate(int value) {
     p->frameRate = clamp(value, 10, 120);
     
     if (p->threadData->config.syncToRefreshrate)
@@ -1339,18 +1339,18 @@ void Graphics::setFrameRate(int value) {
     //shState->input().recalcRepeat((unsigned int)p->frameRate);
 }
 
-double Graphics::averageFrameRate() {
+double OpenGlGraphics::averageFrameRate() {
     return p->averageFPS();
 }
 
-void Graphics::wait(int duration) {
+void OpenGlGraphics::wait(int duration) {
     for (int i = 0; i < duration; ++i) {
         p->checkShutDownReset();
         p->redrawScreen();
     }
 }
 
-void Graphics::fadeout(int duration) {
+void OpenGlGraphics::fadeout(int duration) {
     FBO::unbind();
     
     float curr = p->brightness;
@@ -1375,7 +1375,7 @@ void Graphics::fadeout(int duration) {
     }
 }
 
-void Graphics::fadein(int duration) {
+void OpenGlGraphics::fadein(int duration) {
     FBO::unbind();
     
     float curr = p->brightness;
@@ -1400,7 +1400,7 @@ void Graphics::fadein(int duration) {
     }
 }
 
-Bitmap *Graphics::snapToBitmap() {
+Bitmap *OpenGlGraphics::snapToBitmap() {
     Bitmap *bitmap = new Bitmap(width(), height());
     
     if (bitmap->hasHires()) {
@@ -1414,39 +1414,39 @@ Bitmap *Graphics::snapToBitmap() {
     return bitmap;
 }
 
-int Graphics::width() const { return p->scResLores.x; }
+int OpenGlGraphics::width() const { return p->scResLores.x; }
 
-int Graphics::height() const { return p->scResLores.y; }
+int OpenGlGraphics::height() const { return p->scResLores.y; }
 
-int Graphics::widthHires() const { return p->scRes.x; }
+int OpenGlGraphics::widthHires() const { return p->scRes.x; }
 
-int Graphics::heightHires() const { return p->scRes.y; }
+int OpenGlGraphics::heightHires() const { return p->scRes.y; }
 
-bool Graphics::isPingPongFramebufferActive() const {
+bool OpenGlGraphics::isPingPongFramebufferActive() const {
     return p->screen.getPP().frontBuffer().fbo == FBO::boundFramebufferID || p->screen.getPP().backBuffer().fbo == FBO::boundFramebufferID;
 }
 
-int Graphics::displayContentWidth() const {
+int OpenGlGraphics::displayContentWidth() const {
     return p->scSize.x;
 }
 
-int Graphics::displayContentHeight() const {
+int OpenGlGraphics::displayContentHeight() const {
     return p->scSize.y;
 }
 
-int Graphics::displayWidth() const {
+int OpenGlGraphics::displayWidth() const {
     SDL_DisplayMode dm{};
     SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex(shState->sdlWindow()), &dm);
     return dm.w / p->backingScaleFactor;
 }
 
-int Graphics::displayHeight() const {
+int OpenGlGraphics::displayHeight() const {
     SDL_DisplayMode dm{};
     SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex(shState->sdlWindow()), &dm);
     return dm.h / p->backingScaleFactor;
 }
 
-void Graphics::resizeScreen(int width, int height) {
+void OpenGlGraphics::resizeScreen(int width, int height) {
     p->threadData->rqWindowAdjust.wait();
     p->checkResize(true);
     
@@ -1481,7 +1481,7 @@ void Graphics::resizeScreen(int width, int height) {
     shState->eThread().requestWindowResize(width, height);
 }
 
-void Graphics::resizeWindow(int width, int height, bool center) {
+void OpenGlGraphics::resizeWindow(int width, int height, bool center) {
     p->threadData->rqWindowAdjust.wait();
     p->checkResize();
     
@@ -1495,11 +1495,11 @@ void Graphics::resizeWindow(int width, int height, bool center) {
         this->center();
 }
 
-bool Graphics::updateMovieInput(Movie *movie) {
+bool OpenGlGraphics::updateMovieInput(Movie *movie) {
     return  p->threadData->rqTerm || p->threadData->rqReset;
 }
 
-void Graphics::playMovie(const char *filename, int volume_, bool skippable) {
+void OpenGlGraphics::playMovie(const char *filename, int volume_, bool skippable) {
     if (shState->config().enableHires) {
         Debug() << "BUG: High-res Graphics playMovie not implemented";
     }
@@ -1534,7 +1534,7 @@ void Graphics::playMovie(const char *filename, int volume_, bool skippable) {
     delete movie;
 }
 
-void Graphics::screenshot(const char *filename) {
+void OpenGlGraphics::screenshot(const char *filename) {
     p->threadData->rqWindowAdjust.wait();
     Bitmap *ss = snapToBitmap();
     ss->saveToFile(filename);
@@ -1544,7 +1544,7 @@ void Graphics::screenshot(const char *filename) {
 
 DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
 
-void Graphics::setBrightness(int value) {
+void OpenGlGraphics::setBrightness(int value) {
     value = clamp(value, 0, 255);
     
     if (p->brightness == value)
@@ -1554,7 +1554,7 @@ void Graphics::setBrightness(int value) {
     p->screen.setBrightness(value / 255.0);
 }
 
-void Graphics::reset() {
+void OpenGlGraphics::reset() {
     /* Dispose all live Disposables */
     IntruListLink<Disposable> *iter;
     
@@ -1574,7 +1574,7 @@ void Graphics::reset() {
     setBrightness(255);
 }
 
-void Graphics::center() {
+void OpenGlGraphics::center() {
     p->threadData->rqWindowAdjust.wait();
     if (getFullscreen())
         return;
@@ -1582,30 +1582,30 @@ void Graphics::center() {
     p->threadData->ethread->requestWindowCenter();
 }
 
-bool Graphics::getFullscreen() const {
+bool OpenGlGraphics::getFullscreen() const {
     return p->threadData->ethread->getFullscreen();
 }
 
-void Graphics::setFullscreen(bool value) {
+void OpenGlGraphics::setFullscreen(bool value) {
     p->threadData->ethread->requestFullscreenMode(value);
 }
 
-bool Graphics::getShowCursor() const {
+bool OpenGlGraphics::getShowCursor() const {
     return p->threadData->ethread->getShowCursor();
 }
 
-void Graphics::setShowCursor(bool value) {
+void OpenGlGraphics::setShowCursor(bool value) {
     p->threadData->ethread->requestShowCursor(value);
 }
 
-bool Graphics::getFixedAspectRatio() const
+bool OpenGlGraphics::getFixedAspectRatio() const
 {
     // It's a bit hacky to expose config values as a Graphics
     // attribute, but there's really no point in state duplication
     return shState->config().fixedAspectRatio;
 }
 
-void Graphics::setFixedAspectRatio(bool value)
+void OpenGlGraphics::setFixedAspectRatio(bool value)
 {
     shState->config().fixedAspectRatio = value;
     p->recalculateScreenSize(p->threadData->config.fixedAspectRatio);
@@ -1614,23 +1614,23 @@ void Graphics::setFixedAspectRatio(bool value)
     p->updateScreenResoRatio(p->threadData);
 }
 
-int Graphics::getSmoothScaling() const
+int OpenGlGraphics::getSmoothScaling() const
 {
     // Same deal as with fixed aspect ratio
     return shState->config().smoothScaling;
 }
 
-void Graphics::setSmoothScaling(int value)
+void OpenGlGraphics::setSmoothScaling(int value)
 {
     shState->config().smoothScaling = value;
 }
 
-bool Graphics::getIntegerScaling() const
+bool OpenGlGraphics::getIntegerScaling() const
 {
     return p->integerScaleActive;
 }
 
-void Graphics::setIntegerScaling(bool value)
+void OpenGlGraphics::setIntegerScaling(bool value)
 {
     p->integerScaleActive = value;
     p->findHighestIntegerScale();
@@ -1640,35 +1640,35 @@ void Graphics::setIntegerScaling(bool value)
     p->updateScreenResoRatio(p->threadData);
 }
 
-bool Graphics::getLastMileScaling() const
+bool OpenGlGraphics::getLastMileScaling() const
 {
     return p->integerLastMileScaling;
 }
 
-void Graphics::setLastMileScaling(bool value)
+void OpenGlGraphics::setLastMileScaling(bool value)
 {
     p->integerLastMileScaling = value;
     p->recalculateScreenSize(p->threadData->config.fixedAspectRatio);
     p->updateScreenResoRatio(p->threadData);
 }
 
-bool Graphics::getThreadsafe() const
+bool OpenGlGraphics::getThreadsafe() const
 {
     return p->multithreadedMode;
 }
 
-void Graphics::setThreadsafe(bool value)
+void OpenGlGraphics::setThreadsafe(bool value)
 {
     p->multithreadedMode = value;
 }
 
-double Graphics::getScale() const {
+double OpenGlGraphics::getScale() const {
     p->checkResize();
     return (double)(p->winSize.y / p->backingScaleFactor) / p->scRes.y;
     
 }
 
-void Graphics::setScale(double factor) {
+void OpenGlGraphics::setScale(double factor) {
     p->threadData->rqWindowAdjust.wait();
     factor = clamp(factor, 0.5, 4.0);
     
@@ -1681,13 +1681,13 @@ void Graphics::setScale(double factor) {
     shState->eThread().requestWindowResize(widthpx, heightpx);
 }
 
-bool Graphics::getFrameskip() const { return p->useFrameSkip; }
+bool OpenGlGraphics::getFrameskip() const { return p->useFrameSkip; }
 
-void Graphics::setFrameskip(bool value) { p->useFrameSkip = value; }
+void OpenGlGraphics::setFrameskip(bool value) { p->useFrameSkip = value; }
 
-Scene *Graphics::getScreen() const { return &p->screen; }
+Scene *OpenGlGraphics::getScreen() const { return &p->screen; }
 
-void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset) {
+void OpenGlGraphics::repaintWait(const AtomicFlag &exitCond, bool checkReset) {
     if (exitCond)
         return;
     
@@ -1713,16 +1713,16 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset) {
     GLMeta::blitEnd();
 }
 
-void Graphics::lock(bool force) {
+void OpenGlGraphics::lock(bool force) {
     p->setLock(force);
 }
 
-void Graphics::unlock(bool force) {
+void OpenGlGraphics::unlock(bool force) {
     p->releaseLock(force);
 }
 
-void Graphics::addDisposable(Disposable *d) { p->dispList.append(d->link); }
+void OpenGlGraphics::addDisposable(Disposable *d) { p->dispList.append(d->link); }
 
-void Graphics::remDisposable(Disposable *d) { p->dispList.remove(d->link); }
+void OpenGlGraphics::remDisposable(Disposable *d) { p->dispList.remove(d->link); }
 
 #undef GRAPHICS_THREAD_LOCK
